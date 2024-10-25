@@ -1,0 +1,219 @@
+{% extends 'layouts/app.html' %} {% block content %}
+
+<!-- Registration Form -->
+<div
+  style="
+    background-image: url('../../static/img/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+  "
+>
+  >
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+      <div class="card shadow-sm">
+        <div class="card-body" style="background-color: #e3eefc">
+          <h2 class="text-center mb-4">Register</h2>
+          <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+
+            <!-- First Name Field -->
+            <input
+              type="text"
+              name="first_name"
+              id="id_first_name"
+              placeholder="First Name"
+              style="
+                width: 100%;
+                border-width: 1px;
+                padding: 10px;
+                margin-top: 14px;
+                border-radius: 5px;
+                background-color: transparent;
+              "
+            />
+            {% if form.first_name.errors %}
+            <div class="text-danger small mt-1">
+              {{ form.first_name.errors }}
+            </div>
+            {% endif %}
+
+            <!-- Last Name Field -->
+            <input
+              type="text"
+              name="last_name"
+              id="id_last_name"
+              placeholder="Last Name"
+              style="
+                width: 100%;
+                border-width: 1px;
+                padding: 10px;
+                margin-top: 14px;
+                border-radius: 5px;
+                background-color: transparent;
+              "
+            />
+            {% if form.last_name.errors %}
+            <div class="text-danger small mt-1">
+              {{ form.last_name.errors }}
+            </div>
+            {% endif %}
+
+            <!-- Username Field -->
+            <input
+              type="text"
+              name="username"
+              id="id_username"
+              placeholder="Username"
+              style="
+                width: 100%;
+                border-width: 1px;
+                padding: 10px;
+                margin-top: 14px;
+                border-radius: 5px;
+                background-color: transparent;
+              "
+            />
+            {% if form.username.errors %}
+            <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+            {% endif %}
+
+            <!-- Password Field -->
+            <input
+              type="password"
+              name="password1"
+              id="id_password1"
+              placeholder="Password"
+              style="
+                width: 100%;
+                border-width: 1px;
+                padding: 10px;
+                margin-top: 14px;
+                border-radius: 5px;
+                background-color: transparent;
+              "
+            />
+            {% if form.password1.errors %}
+            <div class="text-danger small mt-1">
+              {{ form.password1.errors }}
+            </div>
+            {% endif %}
+
+            <!-- Show Password Checkbox for password1 -->
+            <div class="">
+              <input
+                type="checkbox"
+                id="show-password1"
+                onclick="togglePassword1()"
+              />
+              <label class="form-check-label" for="show-password1"
+                >Show Password</label
+              >
+            </div>
+
+            <!-- Re-Type Password Field -->
+            <input
+              type="password"
+              name="password2"
+              id="id_password2"
+              placeholder="Retype Password"
+              style="
+                width: 100%;
+                border-width: 1px;
+                padding: 10px;
+                margin-top: 14px;
+                border-radius: 5px;
+                background-color: transparent;
+              "
+            />
+            {% if form.password2.errors %}
+            <div class="text-danger small mt-1">
+              {{ form.password2.errors }}
+            </div>
+            {% endif %}
+
+            <!-- Show Password Checkbox for password2 -->
+            <div>
+              <input
+                type="checkbox"
+                id="show-password2"
+                onclick="togglePassword2()"
+              />
+              <label class="form-check-label" for="show-password2"
+                >Show Password</label
+              >
+            </div>
+
+            <!-- Email Field -->
+            <input
+              type="email"
+              name="email"
+              id="id_email"
+              placeholder="Email"
+              style="
+                width: 100%;
+                border-width: 1px;
+                padding: 10px;
+                margin-top: 14px;
+                border-radius: 5px;
+                background-color: transparent;
+              "
+            />
+            {% if form.email.errors %}
+            <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              style="
+                width: 100%;
+                padding: 5px;
+                margin-top: 14px;
+                border: 1px;
+                color: white;
+                background-color: #4169e1;
+                border-radius: 5px;
+              "
+            >
+              Submit
+            </button>
+
+            <div class="text-center mt-3">
+              <a href="{% url 'login' %}" class="btn btn-link"
+                >Already have an account? Login</a
+              >
+            </div>
+
+            <!-- Back to Dashboard Button -->
+            <div class="text-center mt-3">
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"
+                >Back to Dashboard</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword1() {
+      const passwordField1 = document.getElementById(
+        "{{ form.password1.id_for_label }}"
+      );
+      passwordField1.type =
+        passwordField1.type === "password" ? "text" : "password";
+    }
+
+    function togglePassword2() {
+      const passwordField2 = document.getElementById(
+        "{{ form.password2.id_for_label }}"
+      );
+      passwordField2.type =
+        passwordField2.type === "password" ? "text" : "password";
+    }
+  </script>
+</div>
+{% endblock %}

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual Snort Rule Generation</title>
+    <style>
+      body {
+        /* background-color: #f0f2f5;
+             */
+        background-image: url("../../static/img/bg.png");
+        font-family: "Arial", sans-serif;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 30px;
+        border-radius: 12px;
+        background-color: #e3eefc;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        color: #333;
+        font-weight: 700;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        color: #555;
+      }
+      input,
+      select,
+      textarea {
+        background-color: transparent;
+      }
+
+      select,
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        margin-top: 6px;
+      }
+
+      select:focus,
+      input:focus {
+        border-color: #4169e1;
+        outline: none;
+        box-shadow: 0 0 5px rgba(84, 236, 247, 0.5);
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      button {
+        padding: 12px 20px;
+        background-color: #4169e1;
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      button:hover {
+        background-color: #2956de;
+      }
+
+      textarea {
+        width: 100%;
+        height: 250px;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        resize: none;
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Manual Snort Rule Generation</h2>
+
+      <div class="form-group">
+        <label for="actions">Actions</label>
+        <select id="actions" name="actions" required>
+          <option value="" selected>Select</option>
+          <option value="ALERT">ALERT</option>
+          <option value="MAILALERT">MAILALERT</option>
+          <option value="DROP">DROP</option>
+          <option value="REJECT">REJECT</option>
+          <option value="PASS">PASS</option>
+          <option value="LOG">LOG</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="protocol">Protocol</label>
+        <select id="protocol" name="protocol">
+          <option value="" selected>Select</option>
+          <option value="TCP">TCP</option>
+          <option value="UDP">UDP</option>
+          <option value="IP">IP</option>
+          <option value="ICMP">ICMP</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="source-network">Source Network</label>
+        <select
+          id="source-network"
+          name="source-network"
+          onchange="toggleCustomSourceIP()"
+        >
+          <option value="" selected>Select</option>
+          <option value="$EXTERNAL_NET">$EXTERNAL_NET</option>
+          <option value="$HOME_NET">$HOME_NET</option>
+          <option value="$HTTP_SERVER">$HTTP_SERVER</option>
+          <option value="$DNS_SERVER">$DNS_SERVER</option>
+          <option value="$MAIL_SERVER">$MAIL_SERVER</option>
+          <option value="any">any</option>
+          <option value="custom">Other (Custom IP)</option>
+          <!-- Custom IP Option -->
+        </select>
+        <!-- Custom IP Input, initially hidden -->
+        <input
+          type="text"
+          id="custom-source-ip"
+          name="custom-source-ip"
+          style="display: none"
+          placeholder="Enter Custom Source IP"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="source-port">Source Port</label>
+        <select
+          id="source-port"
+          name="source-port"
+          onchange="toggleCustomSourcePort()"
+        >
+          <option value="" selected>Select</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+          <option value="25">25</option>
+          <option value="53">53</option>
+          <option value="80">80</option>
+          <option value="110">110</option>
+          <option value="143">143</option>
+          <option value="443">443</option>
+          <option value="587">587</option>
+          <option value="any">any</option>
+          <option value="custom">Other (Custom Port)</option>
+        </select>
+        <!-- Custom Port Input, initially hidden -->
+        <input
+          type="number"
+          id="custom-source-port"
+          name="custom-source-port"
+          style="display: none"
+          placeholder="Enter Custom Source Port"
+          min="1"
+          max="65535"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="direction">Direction</label>
+        <select id="direction" name="direction">
+          <option value="" selected>Select</option>
+          <option value="->">-></option>
+          <option value="<>"><></option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="destination-network">Destination Network</label>
+        <select
+          id="destination-network"
+          name="destination-network"
+          onchange="toggleCustomDestinationIP()"
+        >
+          <option value="" selected>Select</option>
+          <option value="$EXTERNAL_NET">$EXTERNAL_NET</option>
+          <option value="$HOME_NET">$HOME_NET</option>
+          <option value="$HTTP_SERVER">$HTTP_SERVER</option>
+          <option value="$DNS_SERVER">$DNS_SERVER</option>
+          <option value="$MAIL_SERVER">$MAIL_SERVER</option>
+          <option value="any">any</option>
+          <option value="custom">Other (Custom IP)</option>
+          <!-- Custom IP Option -->
+        </select>
+        <!-- Custom IP Input, initially hidden -->
+        <input
+          type="text"
+          id="custom-destination-ip"
+          name="custom-destination-ip"
+          style="display: none"
+          placeholder="Enter Custom Destination IP"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="destination-port">Destination Port</label>
+        <select
+          id="destination-port"
+          name="destination-port"
+          onchange="toggleCustomDestinationPort()"
+        >
+          <option value="" selected>Select</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+          <option value="25">25</option>
+          <option value="53">53</option>
+          <option value="80">80</option>
+          <option value="110">110</option>
+          <option value="143">143</option>
+          <option value="443">443</option>
+          <option value="587">587</option>
+          <option value="any">any</option>
+          <option value="custom">Other (Custom Port)</option>
+        </select>
+        <!-- Custom Port Input, initially hidden -->
+        <input
+          type="number"
+          id="custom-destination-port"
+          name="custom-destination-port"
+          style="display: none"
+          placeholder="Enter Custom Destination Port"
+          min="1"
+          max="65535"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="class-type">Class Type</label>
+        <select id="class-type" name="class-type">
+          <option value="" selected>Select</option>
+          <option value="attempted-admin">attempted-admin</option>
+          <option value="attempted-user">attempted-user</option>
+          <option value="inappropriate-content">inappropriate-content</option>
+          <option value="policy-violation">policy-violation</option>
+          <option value="shellcode-detect">shellcode-detect</option>
+          <option value="trojan-activity">trojan-activity</option>
+          <option value="web-application-attack">web-application-attack</option>
+          <option value="attempted-dos">attempted-dos</option>
+          <option value="attempted-recon">attempted-recon</option>
+          <option value="denial-of-service">denial-of-service</option>
+          <option value="misc-attack">misc-attack</option>
+          <option value="web-application-activity">
+            web-application-activity
+          </option>
+          <option value="misc-activity">misc-activity</option>
+          <option value="network-scan">network-scan</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="message-text">Message Text</label>
+        <input type="text" id="message-text" name="message-text" />
+      </div>
+
+      <div class="form-group">
+        <label for="snort-id">Snort ID</label>
+        <input type="number" id="snort-id" name="snort-id" />
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <input
+          type="number"
+          id="priority"
+          name="priority"
+          min="1"
+          max="2147483647"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Payload:</label>
+        <div class="checkbox-group">
+          <label
+            ><input type="checkbox" name="payload" value="content" />
+            Content</label
+          >
+          <label
+            ><input type="checkbox" name="payload" value="pcre" /> PCRE</label
+          >
+          <label
+            ><input type="checkbox" name="payload" value="uricontent" />
+            Uricontent</label
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="payload-text">Payload Text</label>
+        <input type="text" id="payload-text" name="payload-text" />
+      </div>
+
+      <div class="form-group">
+        <label>Payload Options:</label>
+        <div class="checkbox-group">
+          <label
+            ><input
+              type="checkbox"
+              name="payload-options"
+              value="case-sensitive"
+            />
+            Case Sensitive</label
+          >
+          <label
+            ><input type="checkbox" name="payload-options" value="raw-bytes" />
+            Raw Bytes</label
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rule">Generated Snort Rule</label>
+        <textarea id="rule" name="rule" readonly></textarea>
+      </div>
+
+      <button onclick="generateRule()">Generate Snort Rule</button>
+      <button onclick="resetFields()">Reset Fields</button>
+      <button onclick="clearRules()">Clear All Rules</button>
+      <button id="export-btn" style="display: none" onclick="exportRule()">
+        Export Rules as .txt
+      </button>
+    </div>
+    <script>
+      function clearRules() {
+        // Reset select elements to default
+        document
+          .querySelectorAll("select")
+          .forEach((select) => (select.value = ""));
+
+        // Reset input fields
+        document
+          .querySelectorAll('input[type="text"], input[type="number"]')
+          .forEach((input) => (input.value = ""));
+
+        // Hide custom fields
+        document
+          .querySelectorAll(
+            'input[type="text"][id^="custom-"], input[type="number"][id^="custom-"]'
+          )
+          .forEach((input) => (input.style.display = "none"));
+
+        // Uncheck all checkboxes
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => (checkbox.checked = false));
+
+        // Clear the textarea
+        document.getElementById("rule").value = "";
+
+        // Hide the export button
+        document.getElementById("export-btn").style.display = "none";
+
+        // Clear the rules array
+        rules = [];
+      }
+
+      function resetFields() {
+        // Reset select elements to default
+        document
+          .querySelectorAll("select")
+          .forEach((select) => (select.value = ""));
+
+        // Reset input fields
+        document
+          .querySelectorAll('input[type="text"], input[type="number"]')
+          .forEach((input) => (input.value = ""));
+
+        // Hide custom fields
+        // Uncheck all checkboxes
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => (checkbox.checked = false));
+
+        // Clear the textarea
+      }
+      const ipv4Regex =
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      let rules = [];
+      function toggleCustomSourcePort() {
+        const srcPort = document.getElementById("source-port").value;
+        const customSourcePortField =
+          document.getElementById("custom-source-port");
+
+        if (srcPort === "custom") {
+          customSourcePortField.style.display = "block"; // Show input field
+        } else {
+          customSourcePortField.style.display = "none"; // Hide input field
+          customSourcePortField.value = ""; // Clear the value if not needed
+        }
+      }
+
+      function toggleCustomDestinationPort() {
+        const destPort = document.getElementById("destination-port").value;
+        const customDestinationPortField = document.getElementById(
+          "custom-destination-port"
+        );
+
+        if (destPort === "custom") {
+          customDestinationPortField.style.display = "block"; // Show input field
+        } else {
+          customDestinationPortField.style.display = "none"; // Hide input field
+          customDestinationPortField.value = ""; // Clear the value if not needed
+        }
+      }
+
+      function toggleCustomSourceIP() {
+        const srcNet = document.getElementById("source-network").value;
+        const customSourceIPField = document.getElementById("custom-source-ip");
+
+        if (srcNet === "custom") {
+          customSourceIPField.style.display = "block"; // Show input field
+        } else {
+          customSourceIPField.style.display = "none"; // Hide input field
+          customSourceIPField.value = ""; // Clear the value if not needed
+        }
+      }
+
+      function toggleCustomDestinationIP() {
+        const destNet = document.getElementById("destination-network").value;
+        const customDestinationIPField = document.getElementById(
+          "custom-destination-ip"
+        );
+
+        if (destNet === "custom") {
+          customDestinationIPField.style.display = "block"; // Show input field
+        } else {
+          customDestinationIPField.style.display = "none"; // Hide input field
+          customDestinationIPField.value = ""; // Clear the value if not needed
+        }
+      }
+
+      function validateIP(ip) {
+        return ipv4Regex.test(ip); // Returns true if IP is valid
+      }
+
+      function generateRule() {
+        const actions = document.getElementById("actions").value;
+        const protocol = document.getElementById("protocol").value;
+
+        // Get Source Network
+        let srcNet = document.getElementById("source-network").value;
+        if (srcNet === "custom") {
+          srcNet = document.getElementById("custom-source-ip").value;
+          if (!validateIP(srcNet)) {
+            alert("Please enter a valid Source IP address.");
+            return;
+          }
+        }
+
+        let srcPort = document.getElementById("source-port").value;
+        if (srcPort === "custom") {
+          srcPort = document.getElementById("custom-source-port").value;
+          if (srcPort < 1 || srcPort > 65535 || isNaN(srcPort)) {
+            alert("Please enter a valid Source Port number (1-65535).");
+            return;
+          }
+        }
+
+        const direction = document.getElementById("direction").value;
+
+        // Get Destination Network
+        let destNet = document.getElementById("destination-network").value;
+        if (destNet === "custom") {
+          destNet = document.getElementById("custom-destination-ip").value;
+          if (!validateIP(destNet)) {
+            alert("Please enter a valid Destination IP address.");
+            return;
+          }
+        }
+
+        let destPort = document.getElementById("destination-port").value;
+        if (destPort === "custom") {
+          destPort = document.getElementById("custom-destination-port").value;
+          if (destPort < 1 || destPort > 65535 || isNaN(destPort)) {
+            alert("Please enter a valid Destination Port number (1-65535).");
+            return;
+          }
+        }
+
+        const classType = document.getElementById("class-type").value;
+        const msgText = document.getElementById("message-text").value;
+        const sid = document.getElementById("snort-id").value;
+        const priority = document.getElementById("priority").value;
+        const payloadText = document.getElementById("payload-text").value;
+
+        // Check if payload is selected
+        const payload = Array.from(
+          document.querySelectorAll('input[name="payload"]:checked')
+        )
+          .map((el) => el.value)
+          .join(", ");
+
+        // Validation for required fields
+        if (
+          !actions ||
+          !protocol ||
+          !srcNet ||
+          !srcPort ||
+          !direction ||
+          !destNet ||
+          !destPort ||
+          !msgText ||
+          !sid
+        ) {
+          alert("Please fill in all required fields.");
+          return;
+        }
+
+        const payloadOptions = Array.from(
+          document.querySelectorAll('input[name="payload-options"]:checked')
+        )
+          .map((el) => el.value)
+          .join(", ");
+
+        // Build the rule with only non-empty fields
+        let rule = `${actions} ${protocol} ${srcNet} ${srcPort} ${direction} ${destNet} ${destPort}`;
+
+        let options = [];
+        if (msgText) options.push(`msg:"${msgText}"`);
+        if (classType) options.push(`classtype:${classType}`);
+        if (sid) options.push(`sid:${sid}`);
+        if (priority) options.push(`priority:${priority}`);
+        if (payload) options.push(`${payload}:${payloadText}`);
+        if (payloadOptions) options.push(payloadOptions);
+
+        if (options.length > 0) {
+          rule += ` (${options.join("; ")})`;
+        } else {
+          rule += " ()";
+        }
+
+        // Add the rule to the array
+        rules.push(rule);
+        document.getElementById("rule").value = rules.join("\n\n"); // Show all rules
+
+        // Show the export button after generating the rule
+        document.getElementById("export-btn").style.display = "block";
+        resetFields();
+      }
+
+      function exportRule() {
+        const rulesText = rules.join("\n\n"); // Join rules with two newlines
+        const blob = new Blob([rulesText], {
+          type: "text/plain;charset=utf-8",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "snort_rules.txt";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    </script>
+  </body>
+</html>

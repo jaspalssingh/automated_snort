@@ -1,0 +1,140 @@
+{% extends 'layouts/app.html' %} {% block content %}
+<!-- File Upload Form -->
+<div
+  style="
+    background-image: url('../../static/img/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  "
+>
+  <div style="background-color: #e3eefc; border-radius: 10px">
+    <div style="margin: 50px 40px">
+      {% if not snort_rules %}
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <h2>Auto Rule Generator</h2>
+      </div>
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        style="display: flex; flex-direction: column"
+      >
+        {% csrf_token %}
+        <div style="margin-top: 30px">
+          <label for="name">Name:</label><br />
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            style="
+              width: 400px;
+              padding: 10px;
+              border-width: 1px;
+              border-radius: 5px;
+              background-color: transparent;
+            "
+          />
+        </div>
+        <div style="margin-top: 30px">
+          <label for="csv_file">Upload OpenVAS Report (CSV):</label><br />
+          <input
+            type="file"
+            id="csv_file"
+            name="csv_file"
+            accept=".csv"
+            required
+          />
+        </div>
+        <div style="margin-top: 30px">
+          <button type="submit" class="btn btn-dark">Upload and Process</button>
+        </div>
+      </form>
+      {% else %}
+      <!-- Display the generated Snort rules and options after processing -->
+      <div>
+        <div style="display: flex; flex-direction: column; align-items: center">
+          <h2>Generated Snort Rules for {{ name }}</h2>
+        </div>
+        <div style="margin: 20px; width: 100%">
+          <br />
+         
+          
+          <pre>{{ snort_rules }}</pre> 
+        </div>
+        <!-- Display the generated Snort rules in preformatted text -->
+
+        <!-- Options for exporting or configuring -->
+        <form method="POST" action="{% url 'export_snort_rules' %}">
+          {% csrf_token %}
+          <input
+            type="hidden"
+            name="snort_rules"
+            value="{{ snort_rules|escape }}"
+          />
+          <button
+            type="submit"
+            style="
+              width: 100%;
+              padding: 5px;
+              margin-top: 14px;
+              border: 1px;
+              color: white;
+              background-color: #4169e1;
+              border-radius: 5px;
+            "
+          >
+            Export as .txt
+          </button>
+        </form>
+
+        <form method="POST" action="{% url 'configure_snort' %}">
+          {% csrf_token %}
+          <input
+            type="hidden"
+            name="snort_rules"
+            value="{{ snort_rules|escape }}"
+          />
+          <input type="hidden" name="name" value="{{ name }}" />
+          <button
+            type="submit"
+            style="
+              width: 100%;
+              padding: 5px;
+              margin-top: 14px;
+              border: 1px;
+              color: white;
+              background-color: #4169e1;
+              border-radius: 5px;
+            "
+          >
+            Configure Snort IDS
+          </button>
+        </form>
+
+        <!-- Option to upload another report -->
+        <form method="GET" action="{% url 'auto_rule_gen' %}">
+          <button
+            type="submit"
+            class="btn btn-dark"
+            style="
+              width: 100%;
+              padding: 5px;
+              margin-top: 14px;
+              border: 1px;
+              color: white;
+              background-color: #4169e1;
+              border-radius: 5px;
+            "
+          >
+            Upload Another Report
+          </button>
+        </form>
+        {% endif %} {% endblock %}
+      </div>
+    </div>
+  </div>
+</div>

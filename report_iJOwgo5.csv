@@ -1,0 +1,41 @@
+IP,Hostname,Port,Protocol,CVSS,Severity,NVT Name,Summary,Specific Result,NVT OID,CVEs,Task ID,Task Name,Timestamp,Result ID,Impact,Solution,Affected Software,Vulnerability Insight,Detection Method,Product Detection Result,BIDs,CERTs,Other References
+   192.168.1.6,,21,tcp,6.4,Medium,Anonymous FTP Login Reporting,Reports if the remote FTP Server allows anonymous logins.,"It was possible to login to the remote FTP service with the following anonymous account(s):
+
+anonymous:anonymous@example.com
+ftp:anonymous@example.com
+
+",1.3.6.1.4.1.25623.1.0.900600,CVE-1999-0497,0a837d1c-f9ca-4cf8-8c94-4642e6e890e0,Kali,2024-07-27T15:14:15Z,79988125-13ec-48b6-b1c4-a02d69ff2de7,"Based on the files accessible via this anonymous FTP login and
+  the permissions of this account an attacker might be able to:
+
+  - gain access to sensitive files
+
+  - upload or delete files.","If you do not want to share files, you should disable anonymous
+  logins.",,"A host that provides an FTP service may additionally provide
+  Anonymous FTP access as well. Under this arrangement, users do not strictly need an account on the
+  host. Instead the user typically enters 'anonymous' or 'ftp' when prompted for username. Although
+  users are commonly asked to send their email address as their password, little to no verification
+  is actually performed on the supplied data.
+
+  Remark: NIST don't see 'configuration issues' as software flaws so the referenced CVE has a
+  severity of 0.0. The severity of this VT has been raised by Greenbone to still report a
+  configuration issue on the target.","
+Details:
+Anonymous FTP Login Reporting
+(OID: 1.3.6.1.4.1.25623.1.0.900600)
+Version used: 2021-10-20T09:03:29Z
+",,,,
+192.168.1.6,,21,tcp,4.8,Medium,FTP Unencrypted Cleartext Login,"The remote host is running a FTP service that allows cleartext logins over
+  unencrypted connections.","The remote FTP service accepts logins without a previous sent 'AUTH TLS' command. Response(s):
+
+Non-anonymous sessions: 331 Please specify the password.
+Anonymous sessions:     331 Please specify the password.
+",1.3.6.1.4.1.25623.1.0.108528,,0a837d1c-f9ca-4cf8-8c94-4642e6e890e0,Kali,2024-07-27T15:14:15Z,3b74a1a0-b9fe-47d8-bd42-551e214d6de1,"An attacker can uncover login names and passwords by sniffing traffic to the
+  FTP service.","Enable FTPS or enforce the connection via the 'AUTH TLS' command. Please see
+  the manual of the FTP service for more information.",,,"Tries to login to a non FTPS enabled FTP service without sending a
+  'AUTH TLS' command first and checks if the service is accepting the login without enforcing the use of
+  the 'AUTH TLS' command.
+Details:
+FTP Unencrypted Cleartext Login
+(OID: 1.3.6.1.4.1.25623.1.0.108528)
+Version used: 2023-12-20T05:05:58Z
+",,,,

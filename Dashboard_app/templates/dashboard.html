@@ -1,0 +1,42 @@
+{% extends 'layouts/app.html' %} {% block content %}
+<!-- <div class="home-bg">
+  <div style="width: 70%; margin: auto; padding-top: 40px">
+    <nav class="nav">
+      <div>App Name</div>
+      <button>Login</button>
+    </nav>
+    <div
+      style="display: flex; margin-top: 40px; justify-content: space-between"
+    >
+      <div style="width: 50%; display: block">
+        <div
+          style="
+            font-size: 18px;
+            color: #687690;
+            font-weight: 500;
+            margin-top: 1;
+            margin-bottom: 4;
+          "
+        >
+          Welcome to Identeefi
+        </div>
+        <div style="font-size: 50px; font-weight: 700">
+          Securely Authenticate Your Products with Identeefi
+        </div>
+        <div style="font-size: 18px; color: #5a6473; margin-top: 1rem">
+          Our blockchain-based product identification system provides a secure
+          and reliable way to authenticate your products and protect against
+          fraud
+        </div>
+      </div>
+      <div style="width: 40%">
+        <img src="../static/img/hero_illustration.png" width="100%" />
+      </div>
+    </div>
+  </div>
+</div> -->
+{% if user.is_authenticated %}
+<div>{% include 'new_dashboard.html' %}</div>
+{% else %}
+<div>{% include 'home.html' %}</div>
+{% endif %} {% endblock %}

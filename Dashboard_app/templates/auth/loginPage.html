@@ -1,0 +1,76 @@
+{% extends 'layouts/app.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-6">
+    <h2 class="text-muted">Login</h2>
+
+    {% if not otp_required %}
+    <!-- Username and Password Form -->
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">Username:</label>
+        {{ form.username }} {% if form.username.errors %}
+        <span class="text-danger">{{ form.username.errors }}</span>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.password.id_for_label }}">Password:</label>
+        {{ form.password }} {% if form.password.errors %}
+        <span class="text-danger">{{ form.password.errors }}</span>
+        {% endif %}
+      </div>
+
+      <div class="form-group form-check">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          id="show-password"
+          onclick="togglePassword()"
+        />
+        <label class="form-check-label" for="show-password"
+          >Show Password</label
+        >
+      </div>
+
+      <button type="submit" class="btn btn-dark">Login</button>
+    </form>
+    {% else %}
+    <!-- OTP Verification Form -->
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="otp">Enter OTP sent to your email:</label>
+        <input type="text" name="otp" id="otp" class="form-control" required />
+      </div>
+
+      <button type="submit" class="btn btn-dark">Verify OTP</button>
+    </form>
+    {% endif %}
+
+    <!-- Back to Dashboard Button -->
+    <div class="text-center mt-3">
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"
+        >Back to Dashboard</a
+      >
+    </div>
+
+    <!-- Password Reset Link -->
+    <div class="text-center mt-3">
+      <a href="{% url 'password_reset' %}" class="btn btn-link"
+        >Forgot your password?</a
+      >
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePassword() {
+    const passwordField = document.getElementById(
+      "{{ form.password.id_for_label }}"
+    );
+    const showPassword = document.getElementById("show-password");
+    passwordField.type = showPassword.checked ? "text" : "password";
+  }
+</script>
+{% endblock %}

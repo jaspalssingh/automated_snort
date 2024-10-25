@@ -1,0 +1,101 @@
+<!-- <h2>Welcome, {{ user.username }}</h2>
+<a href="{% url 'logout' %}" class="btn btn-dark">Logout</a>
+<a href="{% url 'register' %}" class="btn btn-dark">Register New User</a>
+<a href="{% url 'manual_rule_generator' %}" class="btn btn-dark"
+  >Manual Rule Generator</a
+>
+<a href="{% url 'auto_rule_gen' %}" class="btn btn-dark">Auto Rule Generator</a> -->
+<div
+  style="
+    background-image: url('../../static/img/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  "
+>
+  <div
+    style="
+      background-color: #e3eefc;
+      padding: 40px 20px;
+      border-radius: 10px;
+      width: 500px;
+    "
+  >
+    <nav style="width: 100%; text-align: right">
+      <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+    <div style="display: flex; flex-direction: column; align-items: center">
+      <div style="margin-top: 30px; font-size: 1.1rem">Welcome:</div>
+      <div style="margin-top: 8px; font-size: 2.5rem; font-weight: 600">
+        {{ user.username | title }}
+      </div>
+      <div
+        style="
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 20px;
+          border-color: #879ee3;
+          padding: 10px;
+          font-size: large;
+          margin-top: 20px;
+          width: 250px;
+          display: flex;
+          justify-content: center;
+          background-color: white;
+        "
+      >
+        <a
+          href="{% url 'register' %}"
+          style="text-decoration: none; color: black"
+          >Register New User</a
+        >
+      </div>
+      <div
+        style="
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 20px;
+          border-color: #879ee3;
+          padding: 10px;
+          font-size: large;
+          margin-top: 20px;
+          width: 250px;
+          display: flex;
+          justify-content: center;
+          background-color: white;
+        "
+      >
+        <a
+          href="{% url 'manual_rule_generator' %}"
+          style="text-decoration: none; color: black"
+          >Manual Rule Generator</a
+        >
+      </div>
+      <div
+        style="
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 20px;
+          border-color: #879ee3;
+          padding: 10px;
+          font-size: large;
+          margin-top: 20px;
+          width: 250px;
+          display: flex;
+          margin-bottom: 30px;
+          justify-content: center;
+          background-color: white;
+        "
+      >
+        <a
+          href="{% url 'auto_rule_gen' %}"
+          style="text-decoration: none; color: black"
+          >Auto Rule Generator</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
