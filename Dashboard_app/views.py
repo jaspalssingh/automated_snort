@@ -12,6 +12,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from .forms import CustomUserCreationForm  # Import the custom form
+from django.http import JsonResponse
 
 def generate_otp():
     return str(random.randint(100000, 999999))
@@ -175,6 +176,7 @@ def generate_snort_rule(csv_file):
 
                 # Customize the rule message and content based on the CSV information
                 rule_message = f"OpenVAS Alert: {severity} - {nvt_name}"
+                #AI auth 
                 rule_content = f"USER {cve[:255]}"  # Limiting CVE content length for Snort compatibility
 
                 # Increment the SID and generate a Snort rule
@@ -235,18 +237,28 @@ def configure_snort(request):
         snort_rules = request.POST.get('snort_rules', '')
         name = request.POST.get('name', '')
 
-        # Only merge rules if rules were provided
         if snort_rules:
             try:
-                # Merge generated rules with the existing snort_rule.txt file
                 with open(SNORT_RULES_PATH, 'a' if os.path.exists(SNORT_RULES_PATH) else 'w') as rule_file:
-                    rule_file.write(snort_rules)  # Append or create new file with the rules
-                return HttpResponse(f"Snort rules configured for {name} and merged into {SNORT_RULES_PATH}.<br><pre>{snort_rules}</pre>")
+                    rule_file.write(snort_rules)
+                
+                # Return success message as JSON
+                return JsonResponse({
+                    'status': 'success',
+                    'message': f"Snort rules configured for {name} and merged into {SNORT_RULES_PATH}.",
+                    'snort_rules': snort_rules
+                })
 
             except Exception as e:
-                return HttpResponse(f"Failed to configure Snort rules: {e}")
+                # Return error message as JSON
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f"Failed to configure Snort rules: {e}"
+                })
 
-    return redirect('auto_rule_gen')
+        return JsonResponse({'status': 'error', 'message': "No Snort rules were provided."})
+    
+    return JsonResponse({'status': 'error', 'message': "Invalid request method."})
 
 
 def manual_rule_generator(request):

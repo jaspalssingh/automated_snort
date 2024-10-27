@@ -1,6 +1,5 @@
 {% extends 'layouts/app.html' %} {% block content %}
-  <div
-    style="
+<div style="
       background-image: url('../../static/img/bg.png');
       background-repeat: no-repeat;
       background-size: cover;
@@ -8,56 +7,29 @@
       display: flex;
       justify-content: center;
       align-items: center;
-    "
-  >
-    <div
-      style="background-color: #e3eefc; padding: 40px 20px; border-radius: 10px"
-    >
+    ">
+  <div style="background-color: #e3eefc; padding: 40px 20px; border-radius: 10px">
     <div style="display: flex; flex-direction: column; align-items: center">
-      <h2>App Name</h2>
+      <h2>Snort IntelliGuard</h2>
     </div>
     {% if not otp_required %}
     <div style="display: flex; flex-direction: column; align-items: center">
       <div style="font-size: x-large; font-weight: 400;">Login</h2>
-    </div>
-    <form
-      method="POST"
-      action="{% url 'login' %}"
-      style="display: flex; flex-direction: column"
-    >
-      {% csrf_token %}
-
-      <input
-        type="text"
-        name="username"
-        id="id_username"
-        placeholder="Login"
-        style="width: 400px; padding: 10px; margin-top: 14px; background-color: transparent;"
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        id="id_password"
-        style="width: 400px; padding: 10px; margin-top: 14px; background-color: transparent;"
-      />
-      <div style="display: flex; margin-top: 14px">
-        <input
-          type="checkbox"
-          name="Rememberme"
-          id="Rememberme"
-          style="width: 16px; vertical-align: bottom"
-        />
-        <label
-          for="Rememberme"
-          style="vertical-align: bottom; margin-left: 10px; padding-top: 3px"
-          >Remember me</label
-        >
       </div>
+      <form method="POST" action="{% url 'login' %}" style="display: flex; flex-direction: column">
+        {% csrf_token %}
 
-      <button
-        type="submit"
-        style="
+        <input type="text" name="username" id="id_username" placeholder="Login"
+          style="width: 400px; padding: 10px; margin-top: 14px; background-color: transparent;" />
+        <input type="password" name="password" placeholder="Password" id="id_password"
+          style="width: 400px; padding: 10px; margin-top: 14px; background-color: transparent;" />
+        <div style="display: flex; margin-top: 14px">
+          <input type="checkbox" name="Rememberme" id="Rememberme" style="width: 16px; vertical-align: bottom" />
+          <label for="Rememberme" style="vertical-align: bottom; margin-left: 10px; padding-top: 3px">Remember
+            me</label>
+        </div>
+
+        <button type="submit" style="
           width: 400px;
           padding: 5px;
           margin-top: 14px;
@@ -65,12 +37,10 @@
           color: white;
           background-color: #4169e1;
           border-radius: 5px;
-        "
-      >
-        LOGIN
-      </button>
-      <button
-        style="
+        ">
+          LOGIN
+        </button>
+        <button style="
           width: 400px;
           padding: 5px;
           margin-top: 14px;
@@ -78,25 +48,25 @@
           border-radius: 5px;
           background-color: transparent;
           color: #4169e1;
-        "
-      >
-        BACK
-      </button>
-    </form>
-    {% else %}
-    <form method="POST" action="{% url 'login' %}">
-      {% csrf_token %}
-      <div style="display: flex; flex-direction: column; align-items: center">
-        <div style="font-size: large; font-weight: 400;">Verification</h2>
-      </div>
-      <div class="form-group" style="margin-top: 20px;">
-        <label for="otp">Enter OTP sent to your email:</label>
-        <input type="text" name="otp" id="otp" class="form-control" required style="width: 400px; padding: 10px; margin-top: 5px"  />
-      </div>
+        ">
+          BACK
+        </button>
+      </form>
+      {% else %}
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div style="display: flex; flex-direction: column; align-items: center">
+          <div style="font-size: large; font-weight: 400;">Verification</h2>
+          </div>
+          <div class="form-group" style="margin-top: 20px;">
+            <label for="otp">Enter OTP sent to your email:</label>
+            <input type="text" name="otp" id="otp" class="form-control" required
+              style="width: 400px; padding: 10px; margin-top: 5px" />
+          </div>
 
-      <button type="submit" class="btn btn-dark">Verify OTP</button>
-    </form>
-    {% endif %}
+          <button type="submit" class="btn btn-dark">Verify OTP</button>
+      </form>
+      {% endif %}
+    </div>
   </div>
-</div>
-{% endblock %}
+  {% endblock %}
