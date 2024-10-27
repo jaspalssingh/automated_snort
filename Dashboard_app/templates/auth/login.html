@@ -1,4 +1,5 @@
-{% extends 'layouts/app.html' %} {% block content %}
+{% extends 'layouts/app.html' %}
+{% block content %}
 <div style="
       background-image: url('../../static/img/bg.png');
       background-repeat: no-repeat;
@@ -23,10 +24,10 @@
           style="width: 400px; padding: 10px; margin-top: 14px; background-color: transparent;" />
         <input type="password" name="password" placeholder="Password" id="id_password"
           style="width: 400px; padding: 10px; margin-top: 14px; background-color: transparent;" />
-        <div style="display: flex; margin-top: 14px">
-          <input type="checkbox" name="Rememberme" id="Rememberme" style="width: 16px; vertical-align: bottom" />
-          <label for="Rememberme" style="vertical-align: bottom; margin-left: 10px; padding-top: 3px">Remember
-            me</label>
+
+        <div style="display: flex; margin-top: 8px;">
+          <input type="checkbox" id="show_password" onclick="togglePasswordVisibility()" style="width: 16px;" />
+          <label for="show_password" style="margin-left: 10px;">Show Password</label>
         </div>
 
         <button type="submit" style="
@@ -40,17 +41,19 @@
         ">
           LOGIN
         </button>
-        <button style="
+        <a href="http://127.0.0.1:1234/" style="
           width: 400px;
           padding: 5px;
           margin-top: 14px;
+          text-align: center;
           border: 1px;
           border-radius: 5px;
           background-color: transparent;
           color: #4169e1;
+          text-decoration: none;
         ">
           BACK
-        </button>
+        </a>
       </form>
       {% else %}
       <form method="POST" action="{% url 'login' %}">
@@ -69,4 +72,17 @@
       {% endif %}
     </div>
   </div>
-  {% endblock %}
+</div>
+
+<script>
+  function togglePasswordVisibility() {
+    const passwordField = document.getElementById("id_password");
+    const showPassword = document.getElementById("show_password");
+    if (showPassword.checked) {
+      passwordField.type = "text";
+    } else {
+      passwordField.type = "password";
+    }
+  }
+</script>
+{% endblock %}

@@ -245,8 +245,7 @@ def configure_snort(request):
                 # Return success message as JSON
                 return JsonResponse({
                     'status': 'success',
-                    'message': f"Snort rules configured for {name} and merged into {SNORT_RULES_PATH}.",
-                    'snort_rules': snort_rules
+                    'message': f"Snort rules configured for {name} and merged into {SNORT_RULES_PATH}."
                 })
 
             except Exception as e:
