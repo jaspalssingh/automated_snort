@@ -159,6 +159,9 @@ def update_last_sid(sid, file_path='last_sid.txt'):
         file.write(str(sid))
 
 # Main function to generate Snort rules from the CSV file (does not save to file yet)
+import csv
+import os
+
 def generate_snort_rule(csv_file):
     snort_rules = []  # Initialize an empty list to hold the generated rules
 
@@ -174,17 +177,33 @@ def generate_snort_rule(csv_file):
                 severity = row.get("Severity", "low").strip()
                 nvt_name = row.get("NVT Name", "NVT Unknown").strip()
 
-                # Customize the rule message and content based on the CSV information
+                # Customize the rule message based on the CSV information
                 rule_message = f"OpenVAS Alert: {severity} - {nvt_name}"
-                #AI auth 
-                rule_content = f"USER {cve[:255]}"  # Limiting CVE content length for Snort compatibility
 
-                # Increment the SID and generate a Snort rule
-                last_sid += 1  # Ensure a unique SID is generated
-                rule = f'alert tcp any any -> {ip} {port} (msg:"{rule_message}"; content:"{rule_content}"; sid:{last_sid};)\n'
+                # Define keyword sets for specific vulnerabilities
+                anon = ["anonymous", "ftp", "login", "USER anonymous", "230 Login successful", "guest", "ftp_anonymous", "USER guest", "230 Anonymous access granted"]
+                apache = ["server-status", "Server-status page"]
+                unencrypted = ["USER", "PASS", "ftp", "cleartext", "unencrypted"]
 
-                # Append the rule to the list
-                snort_rules.append(rule)
+                # Determine the keyword set based on the nvt_name
+                if "Anonymous FTP Login Reporting" in nvt_name:
+                    keywords = anon
+                elif "Apache HTTP Server /server-status Accessible (HTTP)" in nvt_name:
+                    keywords = apache
+                elif "FTP Unencrypted Cleartext Login" in nvt_name:
+                    keywords = unencrypted
+                else:
+                    keywords = [f"USER {cve[:255]}"]  # Default to CVE content
+
+                # Generate a rule for each individual keyword
+                for keyword in keywords:
+                    # Increment the SID and generate a Snort rule
+                    last_sid += 1  # Ensure a unique SID is generated
+                    rule_content = f"content:\"{keyword}\""
+                    rule = f'alert tcp any any -> {ip} {port} (msg:"{rule_message}"; {rule_content}; sid:{last_sid};)\n'
+
+                    # Append the rule to the list
+                    snort_rules.append(rule)
 
         # Update the last SID in the file
         update_last_sid(last_sid)
@@ -198,6 +217,7 @@ def generate_snort_rule(csv_file):
 
     # Return the generated rules as a string for display or later use
     return "\n".join(snort_rules)
+
 
 # Django view to handle file upload and display Snort rules
 @auth
